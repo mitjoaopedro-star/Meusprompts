@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calculadora de Calorias & Macros</title>
+    <title>Diário de Calorias</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -28,14 +28,7 @@
             margin-bottom: 20px;
         }
         .header-gradient {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-        }
-        .input-group label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #4b5563;
-            margin-bottom: 4px;
-            display: block;
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
         }
         .input-style {
             width: 100%;
@@ -45,204 +38,294 @@
             font-size: 1rem;
             background-color: #f9fafb;
             transition: all 0.3s;
+            margin-bottom: 12px;
         }
         .input-style:focus {
             outline: none;
-            border-color: #2563eb;
+            border-color: #10b981;
             background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
-        .macro-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-        }
-        /* Ocultar as setinhas chatas dos campos numéricos */
         input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        /* Custom Scrollbar para a lista de alimentos */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #d1d5db; 
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af; 
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container pb-6">
+    <div class="app-container">
         <!-- Cabeçalho -->
-        <div class="header-gradient p-6 text-center text-white">
-            <h1 class="text-2xl font-bold tracking-tight">Calculadora Smart</h1>
-            <p class="text-sm opacity-90 mt-1">Calorias e Macronutrientes</p>
+        <div class="header-gradient p-6 text-center text-white relative">
+            <h1 class="text-2xl font-bold tracking-tight">O que eu comi?</h1>
+            <button onclick="limparLista()" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2 px-3 rounded-lg shadow-md transition-all">
+                Zerar Lista
+            </button>
         </div>
 
-        <div class="p-6">
-            <!-- Formulário -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div class="input-group">
-                    <label>Sexo</label>
-                    <select id="sexo" class="input-style font-semibold text-gray-700">
-                        <option value="M">Masculino</option>
-                        <option value="F">Feminino</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Idade (anos)</label>
-                    <input type="number" id="idade" class="input-style font-semibold text-gray-700" placeholder="Ex: 23">
-                </div>
-                <div class="input-group">
-                    <label>Peso (kg)</label>
-                    <input type="number" id="peso" class="input-style font-semibold text-gray-700" placeholder="Ex: 80">
-                </div>
-                <div class="input-group">
-                    <label>Altura (cm)</label>
-                    <input type="number" id="altura" class="input-style font-semibold text-gray-700" placeholder="Ex: 174">
-                </div>
-            </div>
-
-            <div class="input-group mb-4">
-                <label>Nível de Atividade Física</label>
-                <select id="atividade" class="input-style font-semibold text-gray-700">
-                    <option value="1.2">Sedentário (Pouco/nenhum exercício)</option>
-                    <option value="1.375">Leve (1-3 dias/semana)</option>
-                    <option value="1.55" selected>Moderado (Treino 3-5 dias/semana)</option>
-                    <option value="1.725">Intenso (Treino 6-7 dias/semana)</option>
+        <div class="p-5">
+            <!-- Adicionar Alimento -->
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 shadow-sm">
+                <label class="block text-sm font-bold text-gray-700 mb-2">1. Escolha o Alimento</label>
+                <select id="alimento-select" class="input-style font-semibold text-gray-700" onchange="atualizarPlaceholder()">
+                    <!-- Preenchido via JavaScript -->
                 </select>
+
+                <label id="label-qtd" class="block text-sm font-bold text-gray-700 mb-2">2. Quantidade (em gramas)</label>
+                <div class="flex gap-2">
+                    <input type="number" id="quantidade" class="input-style font-semibold text-gray-700 m-0" placeholder="Ex: 150">
+                    <button onclick="adicionarAlimento()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 rounded-lg transition-colors">
+                        Add
+                    </button>
+                </div>
             </div>
 
-            <div class="input-group mb-6">
-                <label>Objetivo</label>
-                <select id="objetivo" class="input-style font-semibold text-gray-700">
-                    <option value="-500">Cutting (Perder Gordura)</option>
-                    <option value="0">Manutenção (Manter Peso)</option>
-                    <option value="300" selected>Bulking Limpo (Ganhar Massa)</option>
-                </select>
-            </div>
-
-            <button onclick="calcular()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-colors text-lg">
-                Calcular Meu Treino
-            </button>
-
-            <!-- Área de Resultados (Escondida por padrão) -->
-            <div id="resultados" class="hidden mt-8 border-t border-gray-200 pt-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">Seu Alvo Diário</h2>
+            <!-- Resumo do Dia -->
+            <div class="mb-6">
+                <h2 class="text-lg font-bold text-gray-800 mb-3 border-b pb-2">Resumo da Refeição</h2>
                 
-                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center mb-6">
-                    <span class="block text-sm font-bold text-blue-800 uppercase tracking-wider mb-1">Calorias a Consumir</span>
-                    <span id="res-calorias-alvo" class="text-4xl font-extrabold text-blue-600">2755 kcal</span>
-                </div>
-
-                <div class="grid grid-cols-3 gap-3 mb-6">
-                    <div class="macro-card">
-                        <span class="block text-xs font-bold text-gray-500 uppercase">Proteína</span>
-                        <span id="res-prot" class="block text-lg font-bold text-gray-800 mt-1">160g</span>
-                        <span class="block text-[10px] text-gray-400">2g/kg</span>
-                    </div>
-                    <div class="macro-card">
-                        <span class="block text-xs font-bold text-gray-500 uppercase">Carbo</span>
-                        <span id="res-carb" class="block text-lg font-bold text-gray-800 mt-1">350g</span>
-                        <span class="block text-[10px] text-gray-400">Restante</span>
-                    </div>
-                    <div class="macro-card">
-                        <span class="block text-xs font-bold text-gray-500 uppercase">Gordura</span>
-                        <span id="res-gord" class="block text-lg font-bold text-gray-800 mt-1">80g</span>
-                        <span class="block text-[10px] text-gray-400">1g/kg</span>
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Total Consumido</span>
+                        <span id="total-kcal" class="text-3xl font-extrabold text-green-600">0 kcal</span>
                     </div>
                 </div>
 
-                <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
-                    <div class="flex justify-between mb-2">
-                        <span class="font-semibold">Metabolismo Basal (TMB):</span>
-                        <span id="res-tmb" class="font-bold">1778 kcal</span>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-blue-50 border border-blue-100 rounded-lg p-2 shadow-sm">
+                        <span class="block text-xs font-bold text-blue-800">Proteína</span>
+                        <span id="total-prot" class="block font-bold text-gray-800">0g</span>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="font-semibold">Gasto Total em Treino:</span>
-                        <span id="res-gasto" class="font-bold">2755 kcal</span>
+                    <div class="bg-yellow-50 border border-yellow-100 rounded-lg p-2 shadow-sm">
+                        <span class="block text-xs font-bold text-yellow-800">Carbos</span>
+                        <span id="total-carb" class="block font-bold text-gray-800">0g</span>
                     </div>
+                    <div class="bg-red-50 border border-red-100 rounded-lg p-2 shadow-sm">
+                        <span class="block text-xs font-bold text-red-800">Gordura</span>
+                        <span id="total-gord" class="block font-bold text-gray-800">0g</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Alimentos Consumidos -->
+            <div>
+                <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Alimentos Consumidos</h2>
+                <!-- O espaço foi ampliado! min-height de 250px e max-height com scroll -->
+                <div id="lista-alimentos" class="bg-white border border-gray-200 rounded-xl p-4 min-h-[250px] max-h-[400px] overflow-y-auto custom-scroll shadow-sm">
+                    <!-- Os itens aparecerão aqui -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Carregar dados salvos ao abrir o app
-        window.onload = function() {
-            const savedPeso = localStorage.getItem('calc-peso');
-            const savedAltura = localStorage.getItem('calc-altura');
-            const savedIdade = localStorage.getItem('calc-idade');
-            const savedSexo = localStorage.getItem('calc-sexo');
+        // Banco de dados embutido
+        const bdAlimentos = [
+            // --- Minhas Marmitas ---
+            { id: 'marmita_joao', grupo: '⭐ Minhas Marmitas Prontas', nome: 'Marmita (150g Arroz, 170g Fran, 100g Feij)', cal: 551.5, p: 61.4, c: 55.7, g: 6.9, unidade: true },
 
-            if(savedPeso) document.getElementById('peso').value = savedPeso;
-            if(savedAltura) document.getElementById('altura').value = savedAltura;
-            if(savedIdade) document.getElementById('idade').value = savedIdade;
-            if(savedSexo) document.getElementById('sexo').value = savedSexo;
+            // --- Carnes, Aves e Peixes ---
+            { id: 'frango', grupo: '🍗 Carnes e Peixes', nome: 'Peito de Frango (Grelhado - 100g)', cal: 165, p: 31, c: 0, g: 3.6 },
+            { id: 'patinho', grupo: '🍗 Carnes e Peixes', nome: 'Patinho Bovino (Cozido - 100g)', cal: 219, p: 36, c: 0, g: 7.1 },
+            { id: 'peixe_g', grupo: '🍗 Carnes e Peixes', nome: 'Filé de Peixe/Tilápia (Grelhado - 100g)', cal: 128, p: 26, c: 0, g: 2.7 },
+            { id: 'atum_pescador_lata', grupo: '🍗 Carnes e Peixes', nome: 'Lata de Atum Pescador (Drenada 105g - 1 Unid)', cal: 108, p: 20, c: 0, g: 3.2, unidade: true },
+            { id: 'atum_pescador', grupo: '🍗 Carnes e Peixes', nome: 'Atum Pescador Ralado (Grama - 100g)', cal: 103, p: 19, c: 0, g: 3 },
+
+            // --- Ovos ---
+            { id: 'ovo_cozido_u', grupo: '🥚 Ovos', nome: 'Ovo Cozido (1 Unidade Média)', cal: 78, p: 6.5, c: 0.5, g: 5.5, unidade: true },
+            { id: 'ovo_frito_u', grupo: '🥚 Ovos', nome: 'Ovo Frito (1 Unidade Média)', cal: 105, p: 7, c: 0.5, g: 8, unidade: true },
+            { id: 'ovo_100g', grupo: '🥚 Ovos', nome: 'Ovo de Galinha Inteiro (Grama - 100g)', cal: 143, p: 13, c: 1, g: 10 },
+
+            // --- Carboidratos e Massas ---
+            { id: 'arroz_b', grupo: '🍚 Carboidratos e Massas', nome: 'Arroz Branco (Cozido - 100g)', cal: 130, p: 2.6, c: 28.1, g: 0.2 },
+            { id: 'feijao', grupo: '🍚 Carboidratos e Massas', nome: 'Feijão Carioca (Cozido - 100g)', cal: 76, p: 4.8, c: 13.6, g: 0.5 },
+            { id: 'macarrao_t', grupo: '🍚 Carboidratos e Massas', nome: 'Macarrão de Trigo (Cozido - 100g)', cal: 157, p: 5.8, c: 31, g: 0.9 },
+            { id: 'macarrao_i', grupo: '🍚 Carboidratos e Massas', nome: 'Macarrão Integral (Cozido - 100g)', cal: 124, p: 5.3, c: 25, g: 0.5 },
+            { id: 'batata_i', grupo: '🍚 Carboidratos e Massas', nome: 'Batata Inglesa (Cozida - 100g)', cal: 86, p: 1.7, c: 20, g: 0.1 },
+            { id: 'batata_d', grupo: '🍚 Carboidratos e Massas', nome: 'Batata Doce (Cozida - 100g)', cal: 86, p: 1.6, c: 20, g: 0.1 },
+
+            // --- Pães, Aveia e Frutas ---
+            { id: 'pao_f', grupo: '🍞 Pães e Frutas', nome: 'Pão Francês (1 Unidade - 50g)', cal: 150, p: 4, c: 29, g: 1.5, unidade: true },
+            { id: 'aveia', grupo: '🍞 Pães e Frutas', nome: 'Aveia em Flocos (Por 100g)', cal: 394, p: 14, c: 67, g: 7 },
+            { id: 'banana', grupo: '🍞 Pães e Frutas', nome: 'Banana Prata (Por 100g)', cal: 98, p: 1.3, c: 26, g: 0.1 },
+            { id: 'morango', grupo: '🍞 Pães e Frutas', nome: 'Morango Fresco (Por 100g)', cal: 32, p: 0.7, c: 7.7, g: 0.3 },
+
+            // --- Óleos e Suplementos ---
+            { id: 'whey', grupo: '💪 Suplementos e Gorduras', nome: 'Whey Protein Concentrado (Por 100g)', cal: 400, p: 80, c: 10, g: 5 },
+            { id: 'oleo_liza', grupo: '💪 Suplementos e Gorduras', nome: 'Óleo de Soja Liza (1 Colher de Sopa - 13ml)', cal: 108, p: 0, c: 0, g: 12, unidade: true },
+            { id: 'azeite', grupo: '💪 Suplementos e Gorduras', nome: 'Azeite de Oliva (1 Colher de Sopa - 13ml)', cal: 119, p: 0, c: 0, g: 13.5, unidade: true }
+        ];
+
+        let diario = [];
+
+        // Inicializar
+        window.onload = function() {
+            carregarSelect();
+            atualizarPlaceholder();
+            let savedDiario = localStorage.getItem('calc-diario');
+            if (savedDiario) {
+                diario = JSON.parse(savedDiario);
+            }
+            atualizarInterface();
         };
 
-        function calcular() {
-            // Pegar os valores
-            const peso = parseFloat(document.getElementById('peso').value);
-            const altura = parseFloat(document.getElementById('altura').value);
-            const idade = parseFloat(document.getElementById('idade').value);
-            const sexo = document.getElementById('sexo').value;
-            const atividade = parseFloat(document.getElementById('atividade').value);
-            const objetivo = parseFloat(document.getElementById('objetivo').value);
+        // Popular o Select
+        function carregarSelect() {
+            const select = document.getElementById('alimento-select');
+            const grupos = [...new Set(bdAlimentos.map(item => item.grupo))];
+            
+            grupos.forEach(grupo => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = grupo;
+                
+                const alimentosGrupo = bdAlimentos.filter(item => item.grupo === grupo);
+                alimentosGrupo.forEach(alim => {
+                    const option = document.createElement('option');
+                    option.value = alim.id;
+                    option.text = alim.nome;
+                    optgroup.appendChild(option);
+                });
+                
+                select.appendChild(optgroup);
+            });
+        }
 
-            // Validação simples
-            if (!peso || !altura || !idade) {
-                alert("Por favor, preencha peso, altura e idade.");
+        // Mudar Placeholder
+        function atualizarPlaceholder() {
+            const idSelect = document.getElementById('alimento-select').value;
+            const alimento = bdAlimentos.find(a => a.id === idSelect);
+            const label = document.getElementById('label-qtd');
+            const input = document.getElementById('quantidade');
+
+            if (alimento.unidade) {
+                label.innerHTML = "2. Quantidade <span class='text-blue-600'>(em Unidades/Porções)</span>";
+                input.placeholder = "Ex: 1 (unidade)";
+            } else {
+                label.innerHTML = "2. Quantidade <span class='text-green-600'>(em Gramas / ml)</span>";
+                input.placeholder = "Ex: 150";
+            }
+        }
+
+        // Adicionar ao diário
+        function adicionarAlimento() {
+            const idSelect = document.getElementById('alimento-select').value;
+            const quantidadeInput = parseFloat(document.getElementById('quantidade').value);
+
+            if (!quantidadeInput || quantidadeInput <= 0) {
+                alert("Por favor, informe uma quantidade válida.");
                 return;
             }
 
-            // Salvar no telemóvel
-            localStorage.setItem('calc-peso', peso);
-            localStorage.setItem('calc-altura', altura);
-            localStorage.setItem('calc-idade', idade);
-            localStorage.setItem('calc-sexo', sexo);
+            const alimentoBase = bdAlimentos.find(a => a.id === idSelect);
+            const multiplicador = alimentoBase.unidade ? quantidadeInput : (quantidadeInput / 100);
 
-            // Cálculo da TMB (Equação Mifflin-St Jeor)
-            let tmb = 0;
-            if (sexo === 'M') {
-                tmb = (10 * peso) + (6.25 * altura) - (5 * idade) + 5;
-            } else {
-                tmb = (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
+            const novoItem = {
+                idUnique: Date.now(),
+                nome: alimentoBase.nome,
+                qtd: quantidadeInput,
+                isUnidade: alimentoBase.unidade,
+                cal: alimentoBase.cal * multiplicador,
+                p: alimentoBase.p * multiplicador,
+                c: alimentoBase.c * multiplicador,
+                g: alimentoBase.g * multiplicador
+            };
+
+            diario.push(novoItem);
+            localStorage.setItem('calc-diario', JSON.stringify(diario));
+            
+            document.getElementById('quantidade').value = '';
+            atualizarInterface();
+        }
+
+        // Remover item específico
+        function removerItem(idUnique) {
+            diario = diario.filter(item => item.idUnique !== idUnique);
+            localStorage.setItem('calc-diario', JSON.stringify(diario));
+            atualizarInterface();
+        }
+
+        // Zerar Lista
+        function limparLista() {
+            if(confirm("Deseja zerar toda a lista de alimentos consumidos?")) {
+                diario = [];
+                localStorage.removeItem('calc-diario');
+                atualizarInterface();
+            }
+        }
+
+        // Motor Visual 100% à prova de bugs
+        function atualizarInterface() {
+            const containerLista = document.getElementById('lista-alimentos');
+            let htmlHTML = '';
+            
+            // Se a lista estiver vazia, gera o visual de "Vazio" e zera os contadores
+            if (diario.length === 0) {
+                htmlHTML = `
+                    <div class="flex h-full items-center justify-center min-h-[218px]">
+                        <p class="text-sm text-gray-400 italic text-center w-full">Nenhum alimento adicionado.</p>
+                    </div>`;
+                
+                document.getElementById('total-kcal').innerText = "0 kcal";
+                document.getElementById('total-prot').innerText = "0g";
+                document.getElementById('total-carb').innerText = "0g";
+                document.getElementById('total-gord').innerText = "0g";
+                
+                containerLista.innerHTML = htmlHTML;
+                return;
             }
 
-            // Gasto Diário Total
-            const gastoTotal = tmb * atividade;
+            let totalCal = 0, totalP = 0, totalC = 0, totalG = 0;
 
-            // Calorias Alvo (Gasto + Objetivo)
-            const caloriasAlvo = gastoTotal + objetivo;
+            // Se tiver itens, percorre e soma tudo
+            diario.forEach(item => {
+                totalCal += item.cal;
+                totalP += item.p;
+                totalC += item.c;
+                totalG += item.g;
 
-            // Divisão de Macros
-            // Proteína: 2g por kg
-            const protGramas = peso * 2;
-            const protCal = protGramas * 4;
+                const labelQtd = item.isUnidade ? (item.qtd > 1 ? 'unids' : 'unid') : 'g';
 
-            // Gordura: 1g por kg (ou 0.8g se cutting muito agressivo)
-            const gordGramas = peso * 1;
-            const gordCal = gordGramas * 9;
+                // Desenha cada item na tela
+                htmlHTML += `
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-3 last:border-0 last:pb-0 last:mb-0">
+                        <div class="flex-1 pr-2">
+                            <span class="block font-bold text-gray-800 text-sm leading-tight">${item.nome} <span class="text-gray-500 font-normal">(${item.qtd}${labelQtd})</span></span>
+                            <div class="flex gap-2 text-[11px] text-gray-500 mt-1.5">
+                                <span class="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-semibold">${item.p.toFixed(1)}g P</span>
+                                <span class="bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded font-semibold">${item.c.toFixed(1)}g C</span>
+                                <span class="bg-red-50 text-red-700 px-1.5 py-0.5 rounded font-semibold">${item.g.toFixed(1)}g G</span>
+                            </div>
+                        </div>
+                        <div class="text-right flex flex-col items-end">
+                            <span class="block font-extrabold text-green-600 mb-1">${Math.round(item.cal)} kcal</span>
+                            <button onclick="removerItem(${item.idUnique})" class="text-[10px] font-bold text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1 rounded transition-colors">X Excluir</button>
+                        </div>
+                    </div>
+                `;
+            });
 
-            // Carboidratos: O que sobrar das calorias
-            const carbCal = caloriasAlvo - protCal - gordCal;
-            const carbGramas = carbCal / 4;
+            // Aplica o HTML na tela
+            containerLista.innerHTML = htmlHTML;
 
-            // Atualizar a interface
-            document.getElementById('res-tmb').innerText = Math.round(tmb) + " kcal";
-            document.getElementById('res-gasto').innerText = Math.round(gastoTotal) + " kcal";
-            document.getElementById('res-calorias-alvo').innerText = Math.round(caloriasAlvo) + " kcal";
-            
-            document.getElementById('res-prot').innerText = Math.round(protGramas) + "g";
-            document.getElementById('res-gord').innerText = Math.round(gordGramas) + "g";
-            
-            // Garantir que carbos não fiquem negativos (caso o défice seja muito alto)
-            let finalCarbs = carbGramas > 0 ? Math.round(carbGramas) : 0;
-            document.getElementById('res-carb').innerText = finalCarbs + "g";
-
-            // Mostrar os resultados
-            document.getElementById('resultados').classList.remove('hidden');
-            
-            // Rolar suavemente para baixo
-            document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+            // Atualiza os totais grandões lá em cima
+            document.getElementById('total-kcal').innerText = Math.round(totalCal) + " kcal";
+            document.getElementById('total-prot').innerText = Math.round(totalP) + "g";
+            document.getElementById('total-carb').innerText = Math.round(totalC) + "g";
+            document.getElementById('total-gord').innerText = Math.round(totalG) + "g";
         }
     </script>
 </body>

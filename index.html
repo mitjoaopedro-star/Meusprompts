@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hub Fitness - João Pedro</title>
-    <!-- STREAMING_CHUNK: Carregando Tailwind e Fontes -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -67,7 +66,7 @@
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
-        /* Tabela Semanal Simplificada */
+        /* Tabela Semanal */
         .table-container { width: 100%; min-width: 700px; border-collapse: separate; border-spacing: 0; }
         .table-container th, .table-container td {
             border-bottom: 1px solid #f3f4f6; border-right: 1px solid #f3f4f6;
@@ -80,7 +79,6 @@
             text-transform: uppercase; font-size: 0.7rem; text-align: center;
             letter-spacing: 0.05em; width: 80px;
         }
-        .rest-day { color: #9ca3af; text-align: center; font-style: italic; font-weight: 600; font-size: 0.8rem; }
 
         /* Inputs Calendário */
         .cal-input {
@@ -91,10 +89,16 @@
         .cal-input:focus { outline: none; border-bottom-color: #10b981; }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-        /* Tags */
-        .tag { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .tag-cardio { background-color: #dbeafe; color: #1e40af; }
-        .tag-strength { background-color: #d1fae5; color: #065f46; }
+        /* Edição e Tags */
+        .editable {
+            display: inline-block; cursor: text; border-radius: 4px; padding: 2px 4px; margin: -2px -4px;
+            transition: background 0.2s; min-width: 20px; outline: none;
+        }
+        .editable:hover { background: rgba(0,0,0,0.05); }
+        .editable:focus { background: white; outline: 1px solid #10b981; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10; position: relative;}
+        .editable:empty:before { content: attr(data-placeholder); color: #9ca3af; font-style: italic; pointer-events: none; }
+        
+        .tag-editable { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 4px;}
 
         /* Scrollbars Customizados */
         .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -105,7 +109,6 @@
 </head>
 <body>
 
-    <!-- STREAMING_CHUNK: Container Principal e Header -->
     <div class="app-container flex flex-col">
         
         <!-- Header & Navegação -->
@@ -115,7 +118,6 @@
                 <p class="text-slate-400 text-sm mt-1">Seu ecossistema de progresso diário</p>
             </div>
             
-            <!-- 4 Abas de Navegação -->
             <div class="bg-slate-800 p-1.5 rounded-xl tabs-container w-full max-w-2xl mx-auto shadow-inner relative z-10">
                 <button id="btn-perfil" onclick="switchTab('perfil')" class="tab-btn tab-active flex-1 py-2.5 px-4 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2">
                     <i data-lucide="user" class="w-4 h-4"></i> Perfil
@@ -135,18 +137,16 @@
         <!-- ========================================== -->
         <!-- ABA 1: PERFIL & CÁLCULOS METABÓLICOS -->
         <!-- ========================================== -->
-        <!-- STREAMING_CHUNK: Aba Perfil -->
         <div id="tab-perfil-content" class="w-full p-6 sm:p-8 animate-fade-in block bg-white">
             <div class="max-w-3xl mx-auto">
                 <div class="mb-6 border-b pb-4 flex justify-between items-center">
                     <div>
                         <h2 class="text-xl font-bold text-gray-800">Seus Dados Biométricos</h2>
-                        <p class="text-xs text-gray-500 mt-1">Necessários para calcular seu Gasto Energético exato.</p>
+                        <p class="text-xs text-gray-500 mt-1">Essenciais para cálculo de TMB, Alvo Calórico e Água.</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Coluna do Formulário -->
                     <div class="space-y-4 bg-gray-50 p-5 rounded-2xl border border-gray-100">
                         <div>
                             <label class="form-label">Nome</label>
@@ -176,7 +176,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="form-label">Dias de Treino (Por Semana)</label>
+                            <label class="form-label">Nível de Atividade</label>
                             <select id="perfil-atividade" class="form-select" onchange="salvarPerfil()">
                                 <option value="1.2">Nenhum (Sedentário)</option>
                                 <option value="1.375">1 a 3 dias (Leve)</option>
@@ -194,41 +194,28 @@
                         </div>
                     </div>
 
-                    <!-- Coluna de Resultados -->
                     <div class="flex flex-col justify-center gap-4">
                         <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-                            <div class="absolute top-0 right-0 p-4 opacity-10">
-                                <i data-lucide="activity" class="w-24 h-24"></i>
-                            </div>
+                            <div class="absolute top-0 right-0 p-4 opacity-10"><i data-lucide="activity" class="w-24 h-24"></i></div>
                             <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-1 relative z-10">Taxa Metabólica Basal</h3>
-                            <p class="text-xs text-slate-400 mb-2 relative z-10">O que seu corpo gasta parado</p>
                             <div class="text-3xl font-extrabold text-emerald-400 relative z-10"><span id="resultado-tmb">0</span> <span class="text-lg font-medium text-slate-400">kcal</span></div>
                         </div>
-
                         <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white shadow-lg shadow-emerald-900/20 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 p-4 opacity-20">
-                                <i data-lucide="target" class="w-24 h-24"></i>
-                            </div>
-                            <h3 class="text-sm font-bold text-emerald-100 uppercase tracking-wider mb-1 relative z-10">Seu Alvo Diário (Teórico)</h3>
-                            <p class="text-xs text-emerald-200 mb-2 relative z-10">Baseado no seu treino e objetivo</p>
+                            <div class="absolute top-0 right-0 p-4 opacity-20"><i data-lucide="target" class="w-24 h-24"></i></div>
+                            <h3 class="text-sm font-bold text-emerald-100 uppercase tracking-wider mb-1 relative z-10">Alvo Diário (Teórico)</h3>
                             <div class="text-4xl font-extrabold text-white relative z-10"><span id="resultado-alvo">0</span> <span class="text-xl font-medium text-emerald-200">kcal</span></div>
                         </div>
-                        
-                        <p class="text-xs text-gray-400 text-center mt-2 flex items-center justify-center gap-1">
-                            <i data-lucide="info" class="w-3 h-3"></i> O Alvo Diário é sincronizado com seu Cronograma.
-                        </p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- ========================================== -->
-        <!-- ABA 2: CRONOGRAMA SEMANAL (Simplificado) -->
+        <!-- ABA 2: CRONOGRAMA SEMANAL (Dinâmico) -->
         <!-- ========================================== -->
-        <!-- STREAMING_CHUNK: Aba Cronograma Semanal -->
         <div id="tab-cronograma-content" class="w-full hidden animate-fade-in block bg-white">
             <div class="flex justify-between items-center p-4 border-b">
-                <p class="text-sm text-gray-500 font-medium"><i data-lucide="layout-grid" class="w-4 h-4 inline mb-0.5 mr-1"></i> Visão Geral de Metas</p>
+                <p class="text-sm text-gray-500 font-medium"><i data-lucide="layout-grid" class="w-4 h-4 inline mb-0.5 mr-1"></i> Você pode <b class="text-emerald-600">clicar nos textos</b> para editá-los!</p>
                 <button onclick="zerarSemana()" class="text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
                     <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Zerar Semana
                 </button>
@@ -248,8 +235,8 @@
                             <th class="day-header text-center w-32">Dom</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- ALVO TEÓRICO -->
+                    <tbody id="cronograma-tbody">
+                        <!-- Alvo Teórico (Estático Estruturalmente) -->
                         <tr>
                             <td class="row-label border-b bg-gray-50 rounded-tl-xl text-emerald-700">Alvo Teórico</td>
                             <td class="text-center bg-gray-50 border-b"><span class="font-bold text-gray-700 text-sm val-alvo">2000</span> <span class="text-xs text-gray-400">kcal</span></td>
@@ -261,270 +248,43 @@
                             <td class="text-center bg-gray-50 border-b"><span class="font-bold text-gray-700 text-sm val-alvo">2000</span> <span class="text-xs text-gray-400">kcal</span></td>
                         </tr>
 
-                        <!-- TAXA REAL (PROGRESSO) -->
+                        <!-- Taxa Real -->
                         <tr>
                             <td class="row-label border-b">Taxa Real</td>
-                            <!-- Gerado estaticamente para facilitar vinculação de ids -->
-                            <td class="text-center bg-white align-middle">
-                                <input type="number" id="input-seg" class="cal-input" placeholder="0" oninput="updateBar('seg')">
-                                <div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-seg" style="width: 0%"></div></div>
-                                <span class="text-[10px] font-bold text-gray-400" id="txt-seg">0%</span>
-                            </td>
-                            <td class="text-center bg-white align-middle">
-                                <input type="number" id="input-ter" class="cal-input" placeholder="0" oninput="updateBar('ter')">
-                                <div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-ter" style="width: 0%"></div></div>
-                                <span class="text-[10px] font-bold text-gray-400" id="txt-ter">0%</span>
-                            </td>
-                            <td class="text-center bg-white align-middle">
-                                <input type="number" id="input-qua" class="cal-input" placeholder="0" oninput="updateBar('qua')">
-                                <div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-qua" style="width: 0%"></div></div>
-                                <span class="text-[10px] font-bold text-gray-400" id="txt-qua">0%</span>
-                            </td>
-                            <td class="text-center bg-white align-middle">
-                                <input type="number" id="input-qui" class="cal-input" placeholder="0" oninput="updateBar('qui')">
-                                <div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-qui" style="width: 0%"></div></div>
-                                <span class="text-[10px] font-bold text-gray-400" id="txt-qui">0%</span>
-                            </td>
-                            <td class="text-center bg-white align-middle">
-                                <input type="number" id="input-sex" class="cal-input" placeholder="0" oninput="updateBar('sex')">
-                                <div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-sex" style="width: 0%"></div></div>
-                                <span class="text-[10px] font-bold text-gray-400" id="txt-sex">0%</span>
-                            </td>
-                            <td class="text-center bg-white align-middle">
-                                <input type="number" id="input-sab" class="cal-input" placeholder="0" oninput="updateBar('sab')">
-                                <div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-sab" style="width: 0%"></div></div>
-                                <span class="text-[10px] font-bold text-gray-400" id="txt-sab">0%</span>
-                            </td>
-                            <td class="text-center bg-white align-middle">
-                                <input type="number" id="input-dom" class="cal-input" placeholder="0" oninput="updateBar('dom')">
-                                <div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-dom" style="width: 0%"></div></div>
-                                <span class="text-[10px] font-bold text-gray-400" id="txt-dom">0%</span>
-                            </td>
+                            <!-- Gerado estaticamente para progresso rápido -->
+                            <td class="text-center bg-white align-middle"><input type="number" id="input-seg" class="cal-input" placeholder="0" oninput="updateBar('seg')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-seg" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-seg">0%</span></td>
+                            <td class="text-center bg-white align-middle"><input type="number" id="input-ter" class="cal-input" placeholder="0" oninput="updateBar('ter')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-ter" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-ter">0%</span></td>
+                            <td class="text-center bg-white align-middle"><input type="number" id="input-qua" class="cal-input" placeholder="0" oninput="updateBar('qua')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-qua" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-qua">0%</span></td>
+                            <td class="text-center bg-white align-middle"><input type="number" id="input-qui" class="cal-input" placeholder="0" oninput="updateBar('qui')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-qui" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-qui">0%</span></td>
+                            <td class="text-center bg-white align-middle"><input type="number" id="input-sex" class="cal-input" placeholder="0" oninput="updateBar('sex')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-sex" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-sex">0%</span></td>
+                            <td class="text-center bg-white align-middle"><input type="number" id="input-sab" class="cal-input" placeholder="0" oninput="updateBar('sab')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-sab" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-sab">0%</span></td>
+                            <td class="text-center bg-white align-middle"><input type="number" id="input-dom" class="cal-input" placeholder="0" oninput="updateBar('dom')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-dom" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-dom">0%</span></td>
                         </tr>
-
-                        <!-- MANHÃ -->
-                        <tr>
-                            <td class="row-label border-b">Manhã</td>
-                            <td class="text-center bg-white">
-                                <span class="tag tag-cardio">Cardio</span><br><span class="font-semibold text-gray-800 text-xs">10 min</span><br><span class="text-[10px] text-gray-500">Vel. 13</span>
-                            </td>
-                            <td class="text-center bg-gray-50">
-                                <span class="tag tag-strength">Musculação</span><br><span class="font-semibold text-gray-800 text-xs">Pernas (Ant)</span>
-                            </td>
-                            <td class="text-center bg-white">
-                                <span class="tag tag-cardio">Cardio</span><br><span class="font-semibold text-gray-800 text-xs">10 min</span><br><span class="text-[10px] text-gray-500">Vel. 13</span>
-                            </td>
-                            <td class="bg-gray-50 p-0"><div class="rest-day">DESCANSO</div></td>
-                            <td class="text-center bg-white">
-                                <span class="tag tag-strength">Musculação</span><br><span class="font-semibold text-gray-800 text-xs">Pernas (Post)</span>
-                            </td>
-                            <td class="text-center bg-gray-50">
-                                <span class="tag tag-cardio">Cardio</span><br><span class="font-semibold text-gray-800 text-xs">10 min</span><br><span class="text-[10px] text-gray-500">Vel. 13</span>
-                            </td>
-                            <td class="bg-white p-0"><div class="rest-day">DESCANSO</div></td>
-                        </tr>
-
-                        <!-- NOITE -->
-                        <tr>
-                            <td class="row-label border-b rounded-bl-xl">Noite</td>
-                            <td class="text-center bg-white">
-                                <span class="tag tag-strength">Musculação</span><br><span class="font-semibold text-gray-800 text-xs leading-tight">Costas, Ombro, Bíceps</span>
-                            </td>
-                            <td class="text-center bg-gray-50">
-                                <span class="tag tag-cardio">Cardio</span><br><span class="font-semibold text-gray-800 text-xs">10 min</span><br><span class="text-[10px] text-gray-500">Vel. 10</span>
-                            </td>
-                            <td class="text-center bg-white">
-                                <span class="tag tag-strength">Musculação</span><br><span class="font-semibold text-gray-800 text-xs">Peito e Tríceps</span>
-                            </td>
-                            <td class="bg-gray-50 p-0"><div class="rest-day">DESCANSO</div></td>
-                            <td class="text-center bg-white">
-                                <span class="tag tag-cardio">Cardio</span><br><span class="font-semibold text-gray-800 text-xs">10 min</span><br><span class="text-[10px] text-gray-500">Vel. 10</span>
-                            </td>
-                            <td class="text-center bg-gray-50">
-                                <span class="tag tag-strength">Musculação</span><br><span class="font-semibold text-gray-800 text-xs leading-tight">Peito, Ombro, Tríceps</span>
-                            </td>
-                            <td class="bg-white p-0"><div class="rest-day">DESCANSO</div></td>
-                        </tr>
+                        
+                        <!-- Turnos renderizados por JS (Manhã, Noite, Água) -->
                     </tbody>
                 </table>
             </div>
         </div>
 
         <!-- ========================================== -->
-        <!-- ABA 3: TREINOS DETALHADOS (Cards Verticalizados) -->
+        <!-- ABA 3: TREINOS DETALHADOS (Cards Dinâmicos) -->
         <!-- ========================================== -->
-        <!-- STREAMING_CHUNK: Aba de Treinos -->
         <div id="tab-treinos-content" class="w-full hidden bg-gray-50 p-6 sm:p-8">
-            <div class="max-w-4xl mx-auto">
+            <div class="max-w-5xl mx-auto">
                 <div class="mb-6 border-b pb-4 border-gray-200">
-                    <h2 class="text-xl font-bold text-gray-800">Seus Treinos da Semana</h2>
-                    <p class="text-xs text-gray-500 mt-1">Fichas detalhadas organizadas por dia.</p>
+                    <h2 class="text-xl font-bold text-gray-800">Meus Treinos</h2>
+                    <p class="text-xs text-gray-500 mt-1">Clique nos textos para editar, ou use os botões para adicionar novos exercícios.</p>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    
-                    <!-- Card Segunda -->
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                        <div class="flex justify-between items-center mb-4 pb-3 border-b">
-                            <h3 class="font-bold text-slate-800">Segunda-feira</h3>
-                            <span class="tag tag-strength mb-0">Costas & Bíceps</span>
-                        </div>
-                        <ul class="space-y-3 text-sm">
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Remada Baixa (Polia)</span>
-                                <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Pull Down (Polia)</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Remada Curvada</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Remada Invertida</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Puxada Alta Cruzada</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Rosca Direta (Smith)</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Rosca Martelo</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Card Terça -->
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                        <div class="flex justify-between items-center mb-4 pb-3 border-b">
-                            <h3 class="font-bold text-slate-800">Terça-feira</h3>
-                            <span class="tag tag-strength mb-0">Pernas (Ant.)</span>
-                        </div>
-                        <ul class="space-y-3 text-sm">
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Agachamento Smith</span>
-                                <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Leg Press 45°</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Cadeira Extensora</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Cadeira Abdutora</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Card Quarta -->
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                        <div class="flex justify-between items-center mb-4 pb-3 border-b">
-                            <h3 class="font-bold text-slate-800">Quarta-feira</h3>
-                            <span class="tag tag-strength mb-0">Peito & Tríceps</span>
-                        </div>
-                        <ul class="space-y-3 text-sm">
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Supino Reto (Máq.)</span>
-                                <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Supino Inclinado</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Supino Declinado</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Crucifixo (Máq.)</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Tríceps na Polia</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Tríceps Francês</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Card Sexta -->
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                        <div class="flex justify-between items-center mb-4 pb-3 border-b">
-                            <h3 class="font-bold text-slate-800">Sexta-feira</h3>
-                            <span class="tag tag-strength mb-0">Pernas (Post.)</span>
-                        </div>
-                        <ul class="space-y-3 text-sm">
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Afundo c/ Halteres</span>
-                                <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Cadeira Flexora</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Panturrilha em Pé</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Panturrilha Sentado</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Card Sabado -->
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                        <div class="flex justify-between items-center mb-4 pb-3 border-b">
-                            <h3 class="font-bold text-slate-800">Sábado</h3>
-                            <span class="tag tag-strength mb-0">Peito & Ombro</span>
-                        </div>
-                        <ul class="space-y-3 text-sm">
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Supino Reto</span>
-                                <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Voador (Peck Deck)</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Desenv. c/ Halteres</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Elevação Lateral</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                            <li class="flex justify-between items-start">
-                                <span class="font-medium text-gray-700">Tríceps na Polia</span>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">4x10</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                </div>
+                
+                <!-- Container renderizado via JS -->
+                <div id="treinos-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
         </div>
 
         <!-- ========================================== -->
         <!-- ABA 4: DIÁRIO ALIMENTAR -->
         <!-- ========================================== -->
-        <!-- STREAMING_CHUNK: Aba de Diário Alimentar -->
         <div id="tab-diario-content" class="w-full hidden bg-white p-6 sm:p-8">
             <div class="max-w-2xl mx-auto">
                 <div class="flex justify-between items-center mb-6 border-b pb-4">
@@ -532,23 +292,22 @@
                         <h2 class="text-xl font-bold text-gray-800">O que você comeu hoje?</h2>
                         <p class="text-xs text-gray-500 mt-1">Sua meta para hoje é <b id="meta-diario-display">0</b> kcal.</p>
                     </div>
-                    <button onclick="limparLista()" class="text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                    <button onclick="limparListaDiario()" class="text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
                         Zerar Lista
                     </button>
                 </div>
 
-                <!-- Formulário -->
                 <div class="bg-gray-50 rounded-2xl p-5 mb-8 border border-gray-100 shadow-sm">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">1. Selecione o Alimento</label>
-                            <select id="alimento-select" class="form-select font-semibold m-0" onchange="atualizarPlaceholder()">
+                            <select id="alimento-select" class="form-select font-semibold m-0" onchange="atualizarPlaceholderDiario()">
                             </select>
                         </div>
                         <div>
                             <label id="label-qtd" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">2. Quantidade</label>
                             <div class="flex gap-2">
-                                <input type="number" id="quantidade" class="form-input font-semibold m-0 text-center" placeholder="Ex: 150">
+                                <input type="number" id="quantidade" class="form-input font-semibold m-0 text-center" placeholder="Ex: 150" onkeydown="if(event.key==='Enter') adicionarAlimento()">
                                 <button onclick="adicionarAlimento()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 rounded-xl transition-colors flex items-center justify-center shadow-md shadow-emerald-200">
                                     <i data-lucide="plus" class="w-5 h-5"></i>
                                 </button>
@@ -557,7 +316,6 @@
                     </div>
                 </div>
 
-                <!-- Resumo -->
                 <div class="mb-8">
                     <div class="grid grid-cols-4 gap-3 sm:gap-4 text-center">
                         <div class="bg-slate-800 rounded-xl p-3 shadow-sm col-span-4 sm:col-span-1 flex flex-row sm:flex-col items-center sm:justify-center justify-between text-white">
@@ -579,11 +337,9 @@
                     </div>
                 </div>
 
-                <!-- Lista -->
                 <div>
                     <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Registros do Dia</h3>
                     <div id="lista-alimentos" class="bg-white border border-gray-100 rounded-2xl p-2 min-h-[200px] max-h-[350px] overflow-y-auto custom-scroll shadow-inner">
-                        <!-- Itens aqui -->
                     </div>
                 </div>
             </div>
@@ -591,20 +347,226 @@
 
     </div>
 
-    <!-- STREAMING_CHUNK: Scripts e Lógica JavaScript -->
     <script>
-        lucide.createIcons();
+        // ==========================================
+        // DADOS E ESTADO GERAL (Treinos e Cronograma)
+        // ==========================================
+        const diasSemanaIds = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
+        
+        let planState = {
+            seg: {
+                nome: 'Segunda-feira', foco: 'Costas & Bíceps',
+                manha: { tag: 'Cardio', title: '10 min', desc: 'Vel. 13' },
+                noite: { tag: 'Musculação', title: 'Costas, Ombro, Bíceps', desc: '' },
+                exercicios: [
+                    { nome: 'Remada Baixa (Polia)', reps: '4x10' }, { nome: 'Pull Down (Polia)', reps: '4x10' },
+                    { nome: 'Remada Curvada', reps: '4x10' }, { nome: 'Rosca Direta', reps: '4x10' }
+                ]
+            },
+            ter: {
+                nome: 'Terça-feira', foco: 'Pernas (Ant.)',
+                manha: { tag: 'Musculação', title: 'Pernas (Ant)', desc: '' },
+                noite: { tag: 'Cardio', title: '10 min', desc: 'Vel. 10' },
+                exercicios: [
+                    { nome: 'Agachamento Smith', reps: '4x10' }, { nome: 'Leg Press 45°', reps: '4x10' },
+                    { nome: 'Cadeira Extensora', reps: '4x10' }, { nome: 'Cadeira Abdutora', reps: '4x10' }
+                ]
+            },
+            qua: {
+                nome: 'Quarta-feira', foco: 'Peito & Tríceps',
+                manha: { tag: 'Cardio', title: '10 min', desc: 'Vel. 13' },
+                noite: { tag: 'Musculação', title: 'Peito e Tríceps', desc: '' },
+                exercicios: [
+                    { nome: 'Supino Reto (Máq)', reps: '4x10' }, { nome: 'Supino Inclinado', reps: '4x10' },
+                    { nome: 'Crucifixo (Máq)', reps: '4x10' }, { nome: 'Tríceps na Polia', reps: '4x10' }
+                ]
+            },
+            qui: {
+                nome: 'Quinta-feira', foco: 'Livre',
+                manha: { tag: 'Descanso', title: 'Livre', desc: '' },
+                noite: { tag: 'Descanso', title: 'Livre', desc: '' },
+                exercicios: []
+            },
+            sex: {
+                nome: 'Sexta-feira', foco: 'Pernas (Post.)',
+                manha: { tag: 'Musculação', title: 'Pernas (Post)', desc: '' },
+                noite: { tag: 'Cardio', title: '10 min', desc: 'Vel. 10' },
+                exercicios: [
+                    { nome: 'Afundo c/ Halteres', reps: '4x10' }, { nome: 'Cadeira Flexora', reps: '4x10' },
+                    { nome: 'Panturrilha em Pé', reps: '4x10' }
+                ]
+            },
+            sab: {
+                nome: 'Sábado', foco: 'Peito & Ombro',
+                manha: { tag: 'Cardio', title: '10 min', desc: 'Vel. 13' },
+                noite: { tag: 'Musculação', title: 'Peito, Ombro, Tríceps', desc: '' },
+                exercicios: [
+                    { nome: 'Supino Reto', reps: '4x10' }, { nome: 'Desenv. c/ Halteres', reps: '4x10' },
+                    { nome: 'Elevação Lateral', reps: '4x10' }, { nome: 'Tríceps Polia', reps: '4x10' }
+                ]
+            },
+            dom: {
+                nome: 'Domingo', foco: 'Livre',
+                manha: { tag: 'Descanso', title: 'Livre', desc: '' },
+                noite: { tag: 'Descanso', title: 'Livre', desc: '' },
+                exercicios: []
+            }
+        };
+
+        function initPlan() {
+            let saved = localStorage.getItem('user-plan-state');
+            if (saved) planState = JSON.parse(saved);
+            renderPlanUI();
+        }
+
+        function savePlanState() {
+            localStorage.setItem('user-plan-state', JSON.stringify(planState));
+            renderAguaRow(); // Atualiza a água automaticamente sempre que algo muda
+        }
+
+        // Evitar quebra de linha ao apertar Enter
+        function preventEnter(e) { if(e.key === 'Enter') { e.preventDefault(); e.target.blur(); } }
 
         // ==========================================
-        // 1. LÓGICA DE NAVEGAÇÃO
+        // RENDERS PRINCIPAIS (Cronograma e Treinos)
+        // ==========================================
+        function getTagColor(text) {
+            const t = text.toLowerCase();
+            if (t.includes('cardio')) return 'bg-blue-100 text-blue-800 border border-blue-200';
+            if (t.includes('descanso') || t.includes('livre')) return 'bg-gray-100 text-gray-500 border border-gray-200';
+            return 'bg-emerald-100 text-emerald-800 border border-emerald-200'; // Default p/ musculação etc
+        }
+
+        function renderPlanUI() {
+            renderCronogramaPeriods();
+            renderTreinosCards();
+            renderAguaRow();
+            lucide.createIcons();
+        }
+
+        function renderCronogramaPeriods() {
+            const tbody = document.getElementById('cronograma-tbody');
+            // Remove linhas antigas de períodos e água
+            document.querySelectorAll('.dynamic-row').forEach(e => e.remove());
+
+            let htmlManha = `<tr class="dynamic-row"><td class="row-label border-b">Manhã</td>`;
+            let htmlNoite = `<tr class="dynamic-row"><td class="row-label border-b">Noite</td>`;
+
+            diasSemanaIds.forEach(id => {
+                ['manha', 'noite'].forEach(period => {
+                    const data = planState[id][period];
+                    const tagStyle = getTagColor(data.tag);
+                    const bgClass = (id === 'ter' || id === 'qui' || id === 'sab') ? 'bg-gray-50' : 'bg-white';
+                    
+                    const cellHTML = `
+                        <td class="text-center ${bgClass} p-2">
+                            <span class="tag-editable ${tagStyle} editable" contenteditable="true" onkeydown="preventEnter(event)" onblur="planState['${id}']['${period}'].tag = this.innerText; savePlanState(); this.className='tag-editable editable '+getTagColor(this.innerText);" data-placeholder="Tag">${data.tag}</span><br>
+                            <span class="font-semibold text-gray-800 text-xs editable leading-tight" contenteditable="true" onkeydown="preventEnter(event)" onblur="planState['${id}']['${period}'].title = this.innerText; savePlanState();" data-placeholder="Atividade">${data.title}</span><br>
+                            <span class="text-[10px] text-gray-500 editable" contenteditable="true" onkeydown="preventEnter(event)" onblur="planState['${id}']['${period}'].desc = this.innerText; savePlanState();" data-placeholder="Detalhes">${data.desc}</span>
+                        </td>`;
+                    
+                    if(period === 'manha') htmlManha += cellHTML; else htmlNoite += cellHTML;
+                });
+            });
+
+            htmlManha += `</tr>`; htmlNoite += `</tr>`;
+            tbody.insertAdjacentHTML('beforeend', htmlManha + htmlNoite);
+        }
+
+        function renderAguaRow() {
+            document.querySelectorAll('.row-agua').forEach(e => e.remove()); // limpa anterior
+            const tbody = document.getElementById('cronograma-tbody');
+            
+            // Pega peso do perfil
+            let peso = 70;
+            const savedP = localStorage.getItem('user-perfil');
+            if (savedP) peso = parseFloat(JSON.parse(savedP).peso) || 70;
+
+            let htmlAgua = `<tr class="dynamic-row row-agua"><td class="row-label border-b rounded-bl-xl text-blue-700 bg-blue-50">Água (Mín)</td>`;
+
+            diasSemanaIds.forEach(id => {
+                const bgClass = (id === 'ter' || id === 'qui' || id === 'sab') ? 'bg-blue-50/50' : 'bg-blue-50';
+                
+                // Cálculo de Água Dinâmico
+                let ml = peso * 35; // Base
+                const d = planState[id];
+                const strAll = JSON.stringify(d).toLowerCase();
+                
+                if (d.exercicios.length > 0) ml += 500; // Treinou
+                if (strAll.includes('cardio')) ml += 300; // Suou mais
+                if (strAll.includes('perna') || strAll.includes('agachamento')) ml += 200; // Treino pesado
+
+                const litros = (ml / 1000).toFixed(1);
+
+                htmlAgua += `
+                    <td class="text-center ${bgClass} border-b border-blue-100">
+                        <span class="font-bold text-blue-800 text-sm">${litros}L</span>
+                        <div class="text-[9px] text-blue-400 mt-0.5"><i data-lucide="droplet" class="w-3 h-3 inline mb-0.5"></i></div>
+                    </td>`;
+            });
+            htmlAgua += `</tr>`;
+            tbody.insertAdjacentHTML('beforeend', htmlAgua);
+            lucide.createIcons();
+        }
+
+        function renderTreinosCards() {
+            const grid = document.getElementById('treinos-grid');
+            grid.innerHTML = '';
+
+            diasSemanaIds.forEach(id => {
+                const dia = planState[id];
+                
+                let exHtml = '';
+                dia.exercicios.forEach((ex, idx) => {
+                    exHtml += `
+                        <li class="flex justify-between items-start mb-2 group">
+                            <span class="font-medium text-gray-700 text-sm editable flex-1" contenteditable="true" onkeydown="preventEnter(event)" onblur="planState['${id}'].exercicios[${idx}].nome = this.innerText; savePlanState();" data-placeholder="Nome do Exercício">${ex.nome}</span>
+                            <div class="flex items-center gap-2 ml-2">
+                                <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 editable" contenteditable="true" onkeydown="preventEnter(event)" onblur="planState['${id}'].exercicios[${idx}].reps = this.innerText; savePlanState();" data-placeholder="Reps">${ex.reps}</span>
+                                <button onclick="removerEx('${id}', ${idx})" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
+                        </li>`;
+                });
+
+                const cardHtml = `
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col h-full">
+                        <div class="flex justify-between items-center mb-4 pb-3 border-b">
+                            <h3 class="font-bold text-slate-800 editable" contenteditable="true" onkeydown="preventEnter(event)" onblur="planState['${id}'].nome = this.innerText; savePlanState();">${dia.nome}</h3>
+                            <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded editable" contenteditable="true" onkeydown="preventEnter(event)" onblur="planState['${id}'].foco = this.innerText; savePlanState();">${dia.foco}</span>
+                        </div>
+                        <ul class="flex-1">
+                            ${exHtml}
+                        </ul>
+                        <button onclick="adicionarEx('${id}')" class="mt-4 w-full py-2 bg-gray-50 hover:bg-emerald-50 text-emerald-600 border border-dashed border-gray-300 hover:border-emerald-300 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Adicionar Exercício
+                        </button>
+                    </div>`;
+                
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+            lucide.createIcons();
+        }
+
+        function adicionarEx(id) {
+            planState[id].exercicios.push({ nome: 'Novo Exercício', reps: '3x10' });
+            savePlanState();
+            renderTreinosCards(); // Atualiza apenas os cards visualmente
+        }
+        function removerEx(id, idx) {
+            planState[id].exercicios.splice(idx, 1);
+            savePlanState();
+            renderTreinosCards();
+        }
+
+
+        // ==========================================
+        // LÓGICA DE NAVEGAÇÃO E BARRAS DE CALORIAS
         // ==========================================
         function switchTab(tabId) {
             const tabs = ['perfil', 'cronograma', 'treinos', 'diario'];
-            
             tabs.forEach(t => {
                 const btn = document.getElementById(`btn-${t}`);
                 const content = document.getElementById(`tab-${t}-content`);
-                
                 if (t === tabId) {
                     btn.className = "tab-btn tab-active flex-1 py-2.5 px-4 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2";
                     content.classList.remove('hidden');
@@ -615,11 +577,44 @@
             });
         }
 
-        // ==========================================
-        // 2. LÓGICA DE PERFIL E TAXA BASAL (TMB/TDEE)
-        // ==========================================
         let alvoCaloricoGlobal = 2000;
 
+        function carregarCronogramaValores() {
+            diasSemanaIds.forEach(dia => {
+                let savedValue = localStorage.getItem('cal-' + dia);
+                if (savedValue) document.getElementById('input-' + dia).value = savedValue;
+            });
+        }
+
+        function updateBar(diaId) {
+            let input = document.getElementById('input-' + diaId);
+            let val = parseFloat(input.value) || 0;
+            localStorage.setItem('cal-' + diaId, val);
+            let percentage = Math.min(100, Math.max(0, (val / alvoCaloricoGlobal) * 100));
+            let bar = document.getElementById('bar-' + diaId);
+            let txt = document.getElementById('txt-' + diaId);
+            bar.style.width = percentage + '%';
+            txt.innerText = Math.round(percentage) + '%';
+            
+            if (percentage >= 100) { bar.className = "bg-blue-500 h-2 rounded-full transition-all duration-300"; txt.className = "text-[10px] font-bold text-blue-600"; } 
+            else if (percentage > 70) { bar.className = "bg-emerald-500 h-2 rounded-full transition-all duration-300"; txt.className = "text-[10px] font-bold text-emerald-600"; } 
+            else if (percentage > 30) { bar.className = "bg-yellow-400 h-2 rounded-full transition-all duration-300"; txt.className = "text-[10px] font-bold text-yellow-600"; } 
+            else { bar.className = "bg-gray-400 h-2 rounded-full transition-all duration-300"; txt.className = "text-[10px] font-bold text-gray-400"; }
+        }
+
+        function zerarSemana() {
+            if(confirm("Zerar as calorias consumidas da semana toda?")) {
+                diasSemanaIds.forEach(dia => {
+                    localStorage.removeItem('cal-' + dia);
+                    document.getElementById('input-' + dia).value = '';
+                    updateBar(dia);
+                });
+            }
+        }
+
+        // ==========================================
+        // LÓGICA DE PERFIL (TMB/ÁGUA)
+        // ==========================================
         function salvarPerfil() {
             const perfil = {
                 nome: document.getElementById('perfil-nome').value || "",
@@ -630,37 +625,27 @@
                 atividade: parseFloat(document.getElementById('perfil-atividade').value),
                 objetivo: parseInt(document.getElementById('perfil-objetivo').value)
             };
-
             localStorage.setItem('user-perfil', JSON.stringify(perfil));
             calcularMetabolismo(perfil);
-            
-            // Atualiza Header
+            renderAguaRow(); // Re-renderiza a água baseada no novo peso
             if (perfil.nome) document.getElementById('header-name').innerText = `Hub ${perfil.nome.split(' ')[0]}`;
         }
 
         function calcularMetabolismo(p) {
             let tmb = 0;
-            // Equação de Mifflin-St Jeor
             if (p.peso > 0 && p.altura > 0 && p.idade > 0) {
-                if (p.genero === 'M') {
-                    tmb = (10 * p.peso) + (6.25 * p.altura) - (5 * p.idade) + 5;
-                } else {
-                    tmb = (10 * p.peso) + (6.25 * p.altura) - (5 * p.idade) - 161;
-                }
+                if (p.genero === 'M') tmb = (10 * p.peso) + (6.25 * p.altura) - (5 * p.idade) + 5;
+                else tmb = (10 * p.peso) + (6.25 * p.altura) - (5 * p.idade) - 161;
             }
-
             let gastoTotal = tmb * p.atividade;
-            let alvoFinal = gastoTotal > 0 ? gastoTotal + p.objetivo : 0;
-
-            alvoCaloricoGlobal = Math.round(alvoFinal) || 2000; // Default de segurança
+            alvoCaloricoGlobal = Math.round(gastoTotal > 0 ? gastoTotal + p.objetivo : 0) || 2000;
             
             document.getElementById('resultado-tmb').innerText = Math.round(tmb);
             document.getElementById('resultado-alvo').innerText = alvoCaloricoGlobal;
             
-            // Atualiza Tabela Cronograma e texto do Diário
-            atualizarAlvosCronograma();
+            document.querySelectorAll('.val-alvo').forEach(td => td.innerText = alvoCaloricoGlobal);
+            diasSemanaIds.forEach(dia => updateBar(dia)); // Atualiza as barras de progresso com a meta nova
             document.getElementById('meta-diario-display').innerText = alvoCaloricoGlobal;
-            localStorage.setItem('user-alvo-calorico', alvoCaloricoGlobal);
         }
 
         function carregarPerfil() {
@@ -677,74 +662,12 @@
                 calcularMetabolismo(p);
                 if (p.nome) document.getElementById('header-name').innerText = `Hub ${p.nome.split(' ')[0]}`;
             } else {
-                alvoCaloricoGlobal = 2000;
-                atualizarAlvosCronograma();
+                calcularMetabolismo({peso:0, altura:0, idade:0, atividade:1.2, objetivo:0, genero:'M'}); // triggers default update
             }
         }
 
         // ==========================================
-        // 3. LÓGICA DO CRONOGRAMA
-        // ==========================================
-        const diasSemana = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
-
-        function atualizarAlvosCronograma() {
-            // Atualiza os textos da primeira linha da tabela
-            const tdAlvos = document.querySelectorAll('.val-alvo');
-            tdAlvos.forEach(td => td.innerText = alvoCaloricoGlobal);
-
-            // Re-renderiza as barras de progresso com o novo alvo
-            diasSemana.forEach(dia => updateBar(dia));
-        }
-
-        function carregarCronograma() {
-            diasSemana.forEach(dia => {
-                let savedValue = localStorage.getItem('cal-' + dia);
-                if (savedValue) document.getElementById('input-' + dia).value = savedValue;
-            });
-        }
-
-        function updateBar(diaId) {
-            let input = document.getElementById('input-' + diaId);
-            let val = parseFloat(input.value) || 0;
-            localStorage.setItem('cal-' + diaId, val);
-
-            // Baseia-se na Taxa Alvo Teórica Calculada no Perfil
-            let target = alvoCaloricoGlobal; 
-            let percentage = Math.min(100, Math.max(0, (val / target) * 100));
-            
-            let bar = document.getElementById('bar-' + diaId);
-            let txt = document.getElementById('txt-' + diaId);
-            
-            bar.style.width = percentage + '%';
-            txt.innerText = Math.round(percentage) + '%';
-            
-            if (percentage >= 100) {
-                bar.className = "bg-blue-500 h-2 rounded-full transition-all duration-300";
-                txt.className = "text-[10px] font-bold text-blue-600";
-            } else if (percentage > 70) {
-                bar.className = "bg-emerald-500 h-2 rounded-full transition-all duration-300";
-                txt.className = "text-[10px] font-bold text-emerald-600";
-            } else if (percentage > 30) {
-                bar.className = "bg-yellow-400 h-2 rounded-full transition-all duration-300";
-                txt.className = "text-[10px] font-bold text-yellow-600";
-            } else {
-                bar.className = "bg-gray-400 h-2 rounded-full transition-all duration-300";
-                txt.className = "text-[10px] font-bold text-gray-400";
-            }
-        }
-
-        function zerarSemana() {
-            if(confirm("Zerar as calorias consumidas da semana toda?")) {
-                diasSemana.forEach(dia => {
-                    localStorage.removeItem('cal-' + dia);
-                    document.getElementById('input-' + dia).value = '';
-                    updateBar(dia);
-                });
-            }
-        }
-
-        // ==========================================
-        // 4. LÓGICA DO DIÁRIO ALIMENTAR
+        // LÓGICA DO DIÁRIO ALIMENTAR
         // ==========================================
         const bdAlimentos = [
             { id: 'marmita_joao', grupo: '⭐ Minhas Marmitas Prontas', nome: 'Marmita (150g Arroz, 170g Fran, 100g Feij)', cal: 551.5, p: 61.4, c: 55.7, g: 6.9, unidade: true },
@@ -760,26 +683,22 @@
 
         let diario = [];
 
-        function carregarSelect() {
+        function carregarSelectDiario() {
             const select = document.getElementById('alimento-select');
             const grupos = [...new Set(bdAlimentos.map(item => item.grupo))];
-            
             grupos.forEach(grupo => {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = grupo;
+                const optgroup = document.createElement('optgroup'); optgroup.label = grupo;
                 bdAlimentos.filter(item => item.grupo === grupo).forEach(alim => {
                     const option = document.createElement('option');
-                    option.value = alim.id; option.text = alim.nome;
-                    optgroup.appendChild(option);
+                    option.value = alim.id; option.text = alim.nome; optgroup.appendChild(option);
                 });
                 select.appendChild(optgroup);
             });
         }
 
-        function atualizarPlaceholder() {
+        function atualizarPlaceholderDiario() {
             const alim = bdAlimentos.find(a => a.id === document.getElementById('alimento-select').value);
-            const label = document.getElementById('label-qtd');
-            const input = document.getElementById('quantidade');
+            const label = document.getElementById('label-qtd'); const input = document.getElementById('quantidade');
             if (alim.unidade) { label.innerHTML = "2. Quantidade <span class='text-blue-500 normal-case'>(Unid)</span>"; input.placeholder = "Ex: 1"; } 
             else { label.innerHTML = "2. Quantidade <span class='text-emerald-500 normal-case'>(Gramas/ml)</span>"; input.placeholder = "Ex: 150"; }
         }
@@ -801,20 +720,20 @@
             atualizarInterfaceDiario();
         }
 
-        function removerItem(id) {
+        function removerItemDiario(id) {
             diario = diario.filter(item => item.idUnique !== id);
             localStorage.setItem('calc-diario', JSON.stringify(diario));
             atualizarInterfaceDiario();
         }
         
-        function limparLista() {
+        function limparListaDiario() {
             if(confirm("Zerar as refeições de hoje?")) { diario = []; localStorage.removeItem('calc-diario'); atualizarInterfaceDiario(); }
         }
 
         function atualizarInterfaceDiario() {
-            const containerLista = document.getElementById('lista-alimentos');
+            const container = document.getElementById('lista-alimentos');
             if (diario.length === 0) {
-                containerLista.innerHTML = `<div class="flex h-full items-center justify-center min-h-[180px]"><p class="text-sm text-gray-400 italic">Nenhum alimento registrado hoje.</p></div>`;
+                container.innerHTML = `<div class="flex h-full items-center justify-center min-h-[180px]"><p class="text-sm text-gray-400 italic">Prato vazio. Adicione algo acima!</p></div>`;
                 document.getElementById('total-kcal').innerText = "0"; document.getElementById('total-prot').innerText = "0g";
                 document.getElementById('total-carb').innerText = "0g"; document.getElementById('total-gord').innerText = "0g";
                 return;
@@ -836,12 +755,12 @@
                         </div>
                         <div class="text-right flex flex-col items-end gap-1">
                             <span class="block font-extrabold text-emerald-600">${Math.round(item.cal)} kcal</span>
-                            <button onclick="removerItem(${item.idUnique})" class="text-gray-400 hover:text-red-500 p-1 rounded transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <button onclick="removerItemDiario(${item.idUnique})" class="text-gray-400 hover:text-red-500 p-1 rounded transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>`;
             });
 
-            containerLista.innerHTML = html;
+            container.innerHTML = html;
             lucide.createIcons();
             document.getElementById('total-kcal').innerText = Math.round(tCal);
             document.getElementById('total-prot').innerText = Math.round(tP) + "g";
@@ -850,13 +769,16 @@
         }
 
         // ==========================================
-        // INICIALIZAÇÃO
+        // START DO APLICATIVO
         // ==========================================
         window.onload = function() {
+            lucide.createIcons();
             carregarPerfil(); 
-            carregarCronograma();
-            carregarSelect();
-            atualizarPlaceholder();
+            carregarCronogramaValores();
+            initPlan(); // Constroi a tabela do cronograma e os cards
+            
+            carregarSelectDiario();
+            atualizarPlaceholderDiario();
             let savedDiario = localStorage.getItem('calc-diario');
             if (savedDiario) diario = JSON.parse(savedDiario);
             atualizarInterfaceDiario();
@@ -864,5 +786,3 @@
     </script>
 </body>
 </html>
-```eof
-

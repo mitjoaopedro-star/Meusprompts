@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hub Fitness - João Pedro</title>
+    <!-- STREAMING_CHUNK: Imports (Tailwind, Fontes e Ícones) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -109,6 +110,7 @@
 </head>
 <body>
 
+    <!-- STREAMING_CHUNK: Estrutura Principal e Abas de Navegação -->
     <div class="app-container flex flex-col">
         
         <!-- Header & Navegação -->
@@ -118,12 +120,15 @@
                 <p class="text-slate-400 text-sm mt-1">Seu ecossistema de progresso diário</p>
             </div>
             
-            <div class="bg-slate-800 p-1.5 rounded-xl tabs-container w-full max-w-2xl mx-auto shadow-inner relative z-10">
+            <div class="bg-slate-800 p-1.5 rounded-xl tabs-container w-full max-w-3xl mx-auto shadow-inner relative z-10">
                 <button id="btn-perfil" onclick="switchTab('perfil')" class="tab-btn tab-active flex-1 py-2.5 px-4 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2">
                     <i data-lucide="user" class="w-4 h-4"></i> Perfil
                 </button>
                 <button id="btn-cronograma" onclick="switchTab('cronograma')" class="tab-btn tab-inactive flex-1 py-2.5 px-4 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2">
                     <i data-lucide="calendar-days" class="w-4 h-4"></i> Cronograma
+                </button>
+                <button id="btn-agua" onclick="switchTab('agua')" class="tab-btn tab-inactive flex-1 py-2.5 px-4 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="droplet" class="w-4 h-4"></i> Água
                 </button>
                 <button id="btn-treinos" onclick="switchTab('treinos')" class="tab-btn tab-inactive flex-1 py-2.5 px-4 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2">
                     <i data-lucide="dumbbell" class="w-4 h-4"></i> Treinos
@@ -137,12 +142,13 @@
         <!-- ========================================== -->
         <!-- ABA 1: PERFIL & CÁLCULOS METABÓLICOS -->
         <!-- ========================================== -->
+        <!-- STREAMING_CHUNK: Aba Perfil -->
         <div id="tab-perfil-content" class="w-full p-6 sm:p-8 animate-fade-in block bg-white">
             <div class="max-w-3xl mx-auto">
                 <div class="mb-6 border-b pb-4 flex justify-between items-center">
                     <div>
                         <h2 class="text-xl font-bold text-gray-800">Seus Dados Biométricos</h2>
-                        <p class="text-xs text-gray-500 mt-1">Essenciais para cálculo de TMB, Alvo Calórico e Água.</p>
+                        <p class="text-xs text-gray-500 mt-1">Essenciais para cálculo de TMB, Alvo Calórico e metas de Água.</p>
                     </div>
                 </div>
 
@@ -213,9 +219,10 @@
         <!-- ========================================== -->
         <!-- ABA 2: CRONOGRAMA SEMANAL (Dinâmico) -->
         <!-- ========================================== -->
+        <!-- STREAMING_CHUNK: Aba Cronograma -->
         <div id="tab-cronograma-content" class="w-full hidden animate-fade-in block bg-white">
             <div class="flex justify-between items-center p-4 border-b">
-                <p class="text-sm text-gray-500 font-medium"><i data-lucide="layout-grid" class="w-4 h-4 inline mb-0.5 mr-1"></i> Você pode <b class="text-emerald-600">clicar nos textos</b> para editá-los!</p>
+                <p class="text-sm text-gray-500 font-medium"><i data-lucide="layout-grid" class="w-4 h-4 inline mb-0.5 mr-1"></i> Você pode <b class="text-emerald-600">clicar nos textos</b> abaixo para editá-los!</p>
                 <button onclick="zerarSemana()" class="text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
                     <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Zerar Semana
                 </button>
@@ -236,7 +243,7 @@
                         </tr>
                     </thead>
                     <tbody id="cronograma-tbody">
-                        <!-- Alvo Teórico (Estático Estruturalmente) -->
+                        <!-- Alvo Teórico -->
                         <tr>
                             <td class="row-label border-b bg-gray-50 rounded-tl-xl text-emerald-700">Alvo Teórico</td>
                             <td class="text-center bg-gray-50 border-b"><span class="font-bold text-gray-700 text-sm val-alvo">2000</span> <span class="text-xs text-gray-400">kcal</span></td>
@@ -251,7 +258,7 @@
                         <!-- Taxa Real -->
                         <tr>
                             <td class="row-label border-b">Taxa Real</td>
-                            <!-- Gerado estaticamente para progresso rápido -->
+                            <!-- Gerado estaticamente para barras de progresso rápidas -->
                             <td class="text-center bg-white align-middle"><input type="number" id="input-seg" class="cal-input" placeholder="0" oninput="updateBar('seg')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-seg" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-seg">0%</span></td>
                             <td class="text-center bg-white align-middle"><input type="number" id="input-ter" class="cal-input" placeholder="0" oninput="updateBar('ter')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-ter" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-ter">0%</span></td>
                             <td class="text-center bg-white align-middle"><input type="number" id="input-qua" class="cal-input" placeholder="0" oninput="updateBar('qua')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-qua" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-qua">0%</span></td>
@@ -261,15 +268,71 @@
                             <td class="text-center bg-white align-middle"><input type="number" id="input-dom" class="cal-input" placeholder="0" oninput="updateBar('dom')"><div class="w-full bg-gray-100 rounded-full h-2 mb-1 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full transition-all duration-300" id="bar-dom" style="width: 0%"></div></div><span class="text-[10px] font-bold text-gray-400" id="txt-dom">0%</span></td>
                         </tr>
                         
-                        <!-- Turnos renderizados por JS (Manhã, Noite, Água) -->
+                        <!-- Turnos de Manhã/Noite e Água renderizados dinamicamente via JS -->
                     </tbody>
                 </table>
             </div>
         </div>
 
         <!-- ========================================== -->
-        <!-- ABA 3: TREINOS DETALHADOS (Cards Dinâmicos) -->
+        <!-- ABA 3: ÁGUA E HIDRATAÇÃO -->
         <!-- ========================================== -->
+        <!-- STREAMING_CHUNK: Aba de Água -->
+        <div id="tab-agua-content" class="w-full hidden bg-gray-50 p-6 sm:p-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex justify-between items-center mb-6 border-b pb-4 border-gray-200">
+                    <div>
+                        <h2 class="text-xl font-bold text-blue-900">Hidratação Semanal</h2>
+                        <p class="text-xs text-gray-500 mt-1">Sua meta diária flutua automaticamente baseada no esforço agendado para o dia.</p>
+                    </div>
+                    <button onclick="zerarAgua()" class="text-red-500 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                        Zerar Água
+                    </button>
+                </div>
+
+                <!-- Tracker de Dias -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="agua-grid">
+                    <!-- Cards renderizados dinamicamente via JS -->
+                </div>
+
+                <!-- Calculadora de Garrafa -->
+                <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 shadow-sm mt-8">
+                    <div class="flex flex-col md:flex-row gap-6 items-center md:items-stretch">
+                        <div class="w-full md:w-1/3 flex flex-col justify-center">
+                            <label class="block text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">Capacidade da sua Garrafa</label>
+                            <div class="relative">
+                                <input type="number" id="bottle-size" class="form-input font-extrabold text-blue-900 text-xl m-0 pr-10 bg-white border-blue-200 focus:border-blue-500 shadow-inner h-14" value="500" oninput="updateBottleCalc()">
+                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-blue-400 font-bold text-sm">ml</span>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-white rounded-xl p-4 shadow-sm border border-blue-100 flex flex-col justify-center">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Dia de Descanso (Mínimo)</span>
+                                <div class="mt-1 flex items-baseline gap-1">
+                                    <span class="text-3xl font-black text-blue-900" id="bottle-rest-val">0</span>
+                                    <span class="text-sm font-semibold text-blue-500">garrafas</span>
+                                </div>
+                                <span class="text-xs font-medium text-gray-400 mt-1" id="bottle-rest-ml">0 ml</span>
+                            </div>
+                            <div class="bg-blue-600 rounded-xl p-4 shadow-md flex flex-col justify-center text-white relative overflow-hidden">
+                                <div class="absolute right-0 bottom-0 opacity-10"><i data-lucide="flame" class="w-16 h-16"></i></div>
+                                <span class="text-[10px] font-bold text-blue-200 uppercase tracking-wide relative z-10">Dia de Treino + Cardio</span>
+                                <div class="mt-1 flex items-baseline gap-1 relative z-10">
+                                    <span class="text-3xl font-black text-white" id="bottle-work-val">0</span>
+                                    <span class="text-sm font-semibold text-blue-100">garrafas</span>
+                                </div>
+                                <span class="text-xs font-medium text-blue-200 mt-1 relative z-10" id="bottle-work-ml">0 ml</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ABA 4: TREINOS DETALHADOS -->
+        <!-- ========================================== -->
+        <!-- STREAMING_CHUNK: Aba Treinos -->
         <div id="tab-treinos-content" class="w-full hidden bg-gray-50 p-6 sm:p-8">
             <div class="max-w-5xl mx-auto">
                 <div class="mb-6 border-b pb-4 border-gray-200">
@@ -283,8 +346,9 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- ABA 4: DIÁRIO ALIMENTAR -->
+        <!-- ABA 5: DIÁRIO ALIMENTAR -->
         <!-- ========================================== -->
+        <!-- STREAMING_CHUNK: Aba Diário Alimentar -->
         <div id="tab-diario-content" class="w-full hidden bg-white p-6 sm:p-8">
             <div class="max-w-2xl mx-auto">
                 <div class="flex justify-between items-center mb-6 border-b pb-4">
@@ -347,6 +411,7 @@
 
     </div>
 
+    <!-- STREAMING_CHUNK: Scripts e Lógica Geral -->
     <script>
         // ==========================================
         // DADOS E ESTADO GERAL (Treinos e Cronograma)
@@ -421,10 +486,10 @@
 
         function savePlanState() {
             localStorage.setItem('user-plan-state', JSON.stringify(planState));
-            renderAguaRow(); // Atualiza a água automaticamente sempre que algo muda
+            renderAguaRow(); // Atualiza a água automaticamente sempre que algo muda no plano (ex: editou pra 'cardio')
         }
 
-        // Evitar quebra de linha ao apertar Enter
+        // Evitar quebra de linha ao apertar Enter no contenteditable
         function preventEnter(e) { if(e.key === 'Enter') { e.preventDefault(); e.target.blur(); } }
 
         // ==========================================
@@ -434,7 +499,7 @@
             const t = text.toLowerCase();
             if (t.includes('cardio')) return 'bg-blue-100 text-blue-800 border border-blue-200';
             if (t.includes('descanso') || t.includes('livre')) return 'bg-gray-100 text-gray-500 border border-gray-200';
-            return 'bg-emerald-100 text-emerald-800 border border-emerald-200'; // Default p/ musculação etc
+            return 'bg-emerald-100 text-emerald-800 border border-emerald-200'; // Default p/ musculação
         }
 
         function renderPlanUI() {
@@ -446,8 +511,7 @@
 
         function renderCronogramaPeriods() {
             const tbody = document.getElementById('cronograma-tbody');
-            // Remove linhas antigas de períodos e água
-            document.querySelectorAll('.dynamic-row').forEach(e => e.remove());
+            document.querySelectorAll('.dynamic-row').forEach(e => e.remove()); // limpa anterior
 
             let htmlManha = `<tr class="dynamic-row"><td class="row-label border-b">Manhã</td>`;
             let htmlNoite = `<tr class="dynamic-row"><td class="row-label border-b">Noite</td>`;
@@ -473,29 +537,35 @@
             tbody.insertAdjacentHTML('beforeend', htmlManha + htmlNoite);
         }
 
-        function renderAguaRow() {
-            document.querySelectorAll('.row-agua').forEach(e => e.remove()); // limpa anterior
-            const tbody = document.getElementById('cronograma-tbody');
-            
-            // Pega peso do perfil
+        // ==========================================
+        // LÓGICA DE ÁGUA INTELIGENTE
+        // ==========================================
+        function getWaterTargetForDay(id) {
             let peso = 70;
             const savedP = localStorage.getItem('user-perfil');
             if (savedP) peso = parseFloat(JSON.parse(savedP).peso) || 70;
 
+            let ml = peso * 35; // Regra Base
+            const d = planState[id];
+            
+            if(d) {
+                const strAll = JSON.stringify(d).toLowerCase();
+                if (d.exercicios && d.exercicios.length > 0) ml += 500; // Treinou = +500ml
+                if (strAll.includes('cardio')) ml += 300; // Suou mais = +300ml
+                if (strAll.includes('perna') || strAll.includes('agachamento') || strAll.includes('panturrilha')) ml += 200; // Mais glicogênio
+            }
+            return ml;
+        }
+
+        function renderAguaRow() {
+            document.querySelectorAll('.row-agua').forEach(e => e.remove());
+            const tbody = document.getElementById('cronograma-tbody');
+            
             let htmlAgua = `<tr class="dynamic-row row-agua"><td class="row-label border-b rounded-bl-xl text-blue-700 bg-blue-50">Água (Mín)</td>`;
 
             diasSemanaIds.forEach(id => {
                 const bgClass = (id === 'ter' || id === 'qui' || id === 'sab') ? 'bg-blue-50/50' : 'bg-blue-50';
-                
-                // Cálculo de Água Dinâmico
-                let ml = peso * 35; // Base
-                const d = planState[id];
-                const strAll = JSON.stringify(d).toLowerCase();
-                
-                if (d.exercicios.length > 0) ml += 500; // Treinou
-                if (strAll.includes('cardio')) ml += 300; // Suou mais
-                if (strAll.includes('perna') || strAll.includes('agachamento')) ml += 200; // Treino pesado
-
+                let ml = getWaterTargetForDay(id);
                 const litros = (ml / 1000).toFixed(1);
 
                 htmlAgua += `
@@ -506,9 +576,118 @@
             });
             htmlAgua += `</tr>`;
             tbody.insertAdjacentHTML('beforeend', htmlAgua);
+            
+            // Renderizar a aba dedicada à Água
+            renderAguaTab(); 
             lucide.createIcons();
         }
 
+        function renderAguaTab() {
+            const grid = document.getElementById('agua-grid');
+            if(!grid) return;
+            
+            const diasNomes = {seg:'Segunda', ter:'Terça', qua:'Quarta', qui:'Quinta', sex:'Sexta', sab:'Sábado', dom:'Domingo'};
+            let html = '';
+            
+            diasSemanaIds.forEach(id => {
+                const target = getWaterTargetForDay(id);
+                const savedVal = localStorage.getItem('water-' + id) || '';
+                
+                html += `
+                    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 flex flex-col relative overflow-hidden transition-all hover:shadow-md">
+                        <div class="flex justify-between items-center mb-3 relative z-10">
+                            <h4 class="font-bold text-gray-700 text-sm">${diasNomes[id]}</h4>
+                            <span class="text-[10px] font-extrabold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded">Meta: ${(target/1000).toFixed(1)}L</span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-3 mt-auto relative z-10">
+                            <input type="number" id="input-water-${id}" class="form-input text-center py-2 font-black text-blue-900 border-blue-100 m-0 w-full" placeholder="Ex: 1500" value="${savedVal}" oninput="updateWaterBarTracker('${id}', ${target})">
+                            <span class="text-xs font-bold text-gray-400">ml</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2 mt-1 overflow-hidden relative z-10">
+                            <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" id="bar-water-${id}" style="width: 0%"></div>
+                        </div>
+                        <div class="text-right mt-1 relative z-10">
+                            <span class="text-[10px] font-bold text-gray-400" id="txt-water-${id}">0%</span>
+                        </div>
+                    </div>`;
+            });
+            grid.innerHTML = html;
+            
+            // Inicializa as barras visualmente
+            diasSemanaIds.forEach(id => updateWaterBarTracker(id, getWaterTargetForDay(id)));
+            updateBottleCalc();
+        }
+
+        function updateWaterBarTracker(id, target) {
+            const input = document.getElementById(`input-water-${id}`);
+            if(!input) return;
+            
+            let val = parseFloat(input.value) || 0;
+            localStorage.setItem('water-' + id, val);
+            
+            let perc = Math.min(100, Math.max(0, (val / target) * 100));
+            const bar = document.getElementById(`bar-water-${id}`);
+            const txt = document.getElementById(`txt-water-${id}`);
+            
+            if(bar && txt) {
+                bar.style.width = perc + '%';
+                txt.innerText = Math.round(perc) + '%';
+                if(perc >= 100) {
+                    bar.className = "bg-emerald-400 h-2 rounded-full transition-all duration-300";
+                    txt.className = "text-[10px] font-bold text-emerald-500";
+                } else {
+                    bar.className = "bg-blue-500 h-2 rounded-full transition-all duration-300";
+                    txt.className = "text-[10px] font-bold text-blue-400";
+                }
+            }
+        }
+
+        function updateBottleCalc() {
+            const bottleInput = document.getElementById('bottle-size');
+            if(!bottleInput) return;
+            
+            let cap = parseFloat(bottleInput.value) || 500;
+            localStorage.setItem('water-bottle-size', cap);
+            
+            let peso = 70;
+            const savedP = localStorage.getItem('user-perfil');
+            if (savedP) peso = parseFloat(JSON.parse(savedP).peso) || 70;
+
+            const baseMl = peso * 35;
+            const maxMl = baseMl + 500 + 300 + 200; // Simulação: Treino + Cardio + Pernas
+
+            const restBottles = (baseMl / cap).toFixed(1);
+            const workBottles = (maxMl / cap).toFixed(1);
+
+            document.getElementById('bottle-rest-val').innerText = restBottles;
+            document.getElementById('bottle-rest-ml').innerText = baseMl + ' ml';
+            
+            document.getElementById('bottle-work-val').innerText = workBottles;
+            document.getElementById('bottle-work-ml').innerText = maxMl + ' ml';
+        }
+
+        function carregarAguaConfig() {
+            const savedCap = localStorage.getItem('water-bottle-size');
+            if(savedCap) {
+                const el = document.getElementById('bottle-size');
+                if(el) el.value = savedCap;
+            }
+        }
+
+        function zerarAgua() {
+            if(confirm("Zerar todas as anotações de água da semana?")) {
+                diasSemanaIds.forEach(id => {
+                    localStorage.removeItem('water-' + id);
+                    const input = document.getElementById(`input-water-${id}`);
+                    if(input) input.value = '';
+                    updateWaterBarTracker(id, getWaterTargetForDay(id));
+                });
+            }
+        }
+
+        // ==========================================
+        // RENDER DE EXERCÍCIOS (Cards)
+        // ==========================================
         function renderTreinosCards() {
             const grid = document.getElementById('treinos-grid');
             grid.innerHTML = '';
@@ -550,7 +729,7 @@
         function adicionarEx(id) {
             planState[id].exercicios.push({ nome: 'Novo Exercício', reps: '3x10' });
             savePlanState();
-            renderTreinosCards(); // Atualiza apenas os cards visualmente
+            renderTreinosCards(); 
         }
         function removerEx(id, idx) {
             planState[id].exercicios.splice(idx, 1);
@@ -558,15 +737,16 @@
             renderTreinosCards();
         }
 
-
         // ==========================================
-        // LÓGICA DE NAVEGAÇÃO E BARRAS DE CALORIAS
+        // LÓGICA DE NAVEGAÇÃO
         // ==========================================
         function switchTab(tabId) {
-            const tabs = ['perfil', 'cronograma', 'treinos', 'diario'];
+            const tabs = ['perfil', 'cronograma', 'agua', 'treinos', 'diario'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`btn-${t}`);
                 const content = document.getElementById(`tab-${t}-content`);
+                if(!btn || !content) return;
+
                 if (t === tabId) {
                     btn.className = "tab-btn tab-active flex-1 py-2.5 px-4 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2";
                     content.classList.remove('hidden');
@@ -577,6 +757,9 @@
             });
         }
 
+        // ==========================================
+        // LÓGICA DE CALORIAS E BARRAS DE PROGRESSO
+        // ==========================================
         let alvoCaloricoGlobal = 2000;
 
         function carregarCronogramaValores() {
@@ -590,9 +773,11 @@
             let input = document.getElementById('input-' + diaId);
             let val = parseFloat(input.value) || 0;
             localStorage.setItem('cal-' + diaId, val);
+            
             let percentage = Math.min(100, Math.max(0, (val / alvoCaloricoGlobal) * 100));
             let bar = document.getElementById('bar-' + diaId);
             let txt = document.getElementById('txt-' + diaId);
+            
             bar.style.width = percentage + '%';
             txt.innerText = Math.round(percentage) + '%';
             
@@ -613,7 +798,7 @@
         }
 
         // ==========================================
-        // LÓGICA DE PERFIL (TMB/ÁGUA)
+        // LÓGICA DE PERFIL (TMB E INTEGRAÇÕES)
         // ==========================================
         function salvarPerfil() {
             const perfil = {
@@ -644,7 +829,7 @@
             document.getElementById('resultado-alvo').innerText = alvoCaloricoGlobal;
             
             document.querySelectorAll('.val-alvo').forEach(td => td.innerText = alvoCaloricoGlobal);
-            diasSemanaIds.forEach(dia => updateBar(dia)); // Atualiza as barras de progresso com a meta nova
+            diasSemanaIds.forEach(dia => updateBar(dia)); // Atualiza calorias no cronograma
             document.getElementById('meta-diario-display').innerText = alvoCaloricoGlobal;
         }
 
@@ -662,7 +847,7 @@
                 calcularMetabolismo(p);
                 if (p.nome) document.getElementById('header-name').innerText = `Hub ${p.nome.split(' ')[0]}`;
             } else {
-                calcularMetabolismo({peso:0, altura:0, idade:0, atividade:1.2, objetivo:0, genero:'M'}); // triggers default update
+                calcularMetabolismo({peso:0, altura:0, idade:0, atividade:1.2, objetivo:0, genero:'M'}); // Default update
             }
         }
 
@@ -775,7 +960,8 @@
             lucide.createIcons();
             carregarPerfil(); 
             carregarCronogramaValores();
-            initPlan(); // Constroi a tabela do cronograma e os cards
+            initPlan(); 
+            carregarAguaConfig();
             
             carregarSelectDiario();
             atualizarPlaceholderDiario();
@@ -786,3 +972,4 @@
     </script>
 </body>
 </html>
+```eof

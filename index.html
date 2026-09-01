@@ -1,29 +1,249 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Meus Prompts</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon.png">
-  <style>
-    body { font-family: -apple-system, sans-serif; padding: 20px; background: #f2f2f7; }
-    textarea { width: 100%; height: 200px; border-radius: 10px; border: none; padding: 10px; font-size: 16px; margin-bottom: 20px; }
-    button { background: #007aff; color: white; border: none; padding: 15px; border-radius: 10px; font-size: 16px; width: 100%; font-weight: bold; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calculadora de Calorias & Macros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .app-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        }
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .input-style {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1rem;
+            background-color: #f9fafb;
+            transition: all 0.3s;
+        }
+        .input-style:focus {
+            outline: none;
+            border-color: #2563eb;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .macro-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        /* Ocultar as setinhas chatas dos campos numéricos */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
 </head>
 <body>
-  <h2 style="margin-top: 40px;">Meus Códigos e Prompts</h2>
-  <textarea id="promptArea" placeholder="Cole ou digite seu prompt aqui..."></textarea>
-  <button onclick="copiarPrompt()">Copiar Prompt</button>
 
-  <script>
-    function copiarPrompt() {
-      var copyText = document.getElementById("promptArea");
-      copyText.select();
-      document.execCommand("copy");
-      alert("Prompt copiado!");
-    }
-  </script>
+    <div class="app-container pb-6">
+        <!-- Cabeçalho -->
+        <div class="header-gradient p-6 text-center text-white">
+            <h1 class="text-2xl font-bold tracking-tight">Calculadora Smart</h1>
+            <p class="text-sm opacity-90 mt-1">Calorias e Macronutrientes</p>
+        </div>
+
+        <div class="p-6">
+            <!-- Formulário -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="input-group">
+                    <label>Sexo</label>
+                    <select id="sexo" class="input-style font-semibold text-gray-700">
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Idade (anos)</label>
+                    <input type="number" id="idade" class="input-style font-semibold text-gray-700" placeholder="Ex: 23">
+                </div>
+                <div class="input-group">
+                    <label>Peso (kg)</label>
+                    <input type="number" id="peso" class="input-style font-semibold text-gray-700" placeholder="Ex: 80">
+                </div>
+                <div class="input-group">
+                    <label>Altura (cm)</label>
+                    <input type="number" id="altura" class="input-style font-semibold text-gray-700" placeholder="Ex: 174">
+                </div>
+            </div>
+
+            <div class="input-group mb-4">
+                <label>Nível de Atividade Física</label>
+                <select id="atividade" class="input-style font-semibold text-gray-700">
+                    <option value="1.2">Sedentário (Pouco/nenhum exercício)</option>
+                    <option value="1.375">Leve (1-3 dias/semana)</option>
+                    <option value="1.55" selected>Moderado (Treino 3-5 dias/semana)</option>
+                    <option value="1.725">Intenso (Treino 6-7 dias/semana)</option>
+                </select>
+            </div>
+
+            <div class="input-group mb-6">
+                <label>Objetivo</label>
+                <select id="objetivo" class="input-style font-semibold text-gray-700">
+                    <option value="-500">Cutting (Perder Gordura)</option>
+                    <option value="0">Manutenção (Manter Peso)</option>
+                    <option value="300" selected>Bulking Limpo (Ganhar Massa)</option>
+                </select>
+            </div>
+
+            <button onclick="calcular()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-colors text-lg">
+                Calcular Meu Treino
+            </button>
+
+            <!-- Área de Resultados (Escondida por padrão) -->
+            <div id="resultados" class="hidden mt-8 border-t border-gray-200 pt-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 text-center">Seu Alvo Diário</h2>
+                
+                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center mb-6">
+                    <span class="block text-sm font-bold text-blue-800 uppercase tracking-wider mb-1">Calorias a Consumir</span>
+                    <span id="res-calorias-alvo" class="text-4xl font-extrabold text-blue-600">2755 kcal</span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <div class="macro-card">
+                        <span class="block text-xs font-bold text-gray-500 uppercase">Proteína</span>
+                        <span id="res-prot" class="block text-lg font-bold text-gray-800 mt-1">160g</span>
+                        <span class="block text-[10px] text-gray-400">2g/kg</span>
+                    </div>
+                    <div class="macro-card">
+                        <span class="block text-xs font-bold text-gray-500 uppercase">Carbo</span>
+                        <span id="res-carb" class="block text-lg font-bold text-gray-800 mt-1">350g</span>
+                        <span class="block text-[10px] text-gray-400">Restante</span>
+                    </div>
+                    <div class="macro-card">
+                        <span class="block text-xs font-bold text-gray-500 uppercase">Gordura</span>
+                        <span id="res-gord" class="block text-lg font-bold text-gray-800 mt-1">80g</span>
+                        <span class="block text-[10px] text-gray-400">1g/kg</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-semibold">Metabolismo Basal (TMB):</span>
+                        <span id="res-tmb" class="font-bold">1778 kcal</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-semibold">Gasto Total em Treino:</span>
+                        <span id="res-gasto" class="font-bold">2755 kcal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar dados salvos ao abrir o app
+        window.onload = function() {
+            const savedPeso = localStorage.getItem('calc-peso');
+            const savedAltura = localStorage.getItem('calc-altura');
+            const savedIdade = localStorage.getItem('calc-idade');
+            const savedSexo = localStorage.getItem('calc-sexo');
+
+            if(savedPeso) document.getElementById('peso').value = savedPeso;
+            if(savedAltura) document.getElementById('altura').value = savedAltura;
+            if(savedIdade) document.getElementById('idade').value = savedIdade;
+            if(savedSexo) document.getElementById('sexo').value = savedSexo;
+        };
+
+        function calcular() {
+            // Pegar os valores
+            const peso = parseFloat(document.getElementById('peso').value);
+            const altura = parseFloat(document.getElementById('altura').value);
+            const idade = parseFloat(document.getElementById('idade').value);
+            const sexo = document.getElementById('sexo').value;
+            const atividade = parseFloat(document.getElementById('atividade').value);
+            const objetivo = parseFloat(document.getElementById('objetivo').value);
+
+            // Validação simples
+            if (!peso || !altura || !idade) {
+                alert("Por favor, preencha peso, altura e idade.");
+                return;
+            }
+
+            // Salvar no telemóvel
+            localStorage.setItem('calc-peso', peso);
+            localStorage.setItem('calc-altura', altura);
+            localStorage.setItem('calc-idade', idade);
+            localStorage.setItem('calc-sexo', sexo);
+
+            // Cálculo da TMB (Equação Mifflin-St Jeor)
+            let tmb = 0;
+            if (sexo === 'M') {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * idade) + 5;
+            } else {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
+            }
+
+            // Gasto Diário Total
+            const gastoTotal = tmb * atividade;
+
+            // Calorias Alvo (Gasto + Objetivo)
+            const caloriasAlvo = gastoTotal + objetivo;
+
+            // Divisão de Macros
+            // Proteína: 2g por kg
+            const protGramas = peso * 2;
+            const protCal = protGramas * 4;
+
+            // Gordura: 1g por kg (ou 0.8g se cutting muito agressivo)
+            const gordGramas = peso * 1;
+            const gordCal = gordGramas * 9;
+
+            // Carboidratos: O que sobrar das calorias
+            const carbCal = caloriasAlvo - protCal - gordCal;
+            const carbGramas = carbCal / 4;
+
+            // Atualizar a interface
+            document.getElementById('res-tmb').innerText = Math.round(tmb) + " kcal";
+            document.getElementById('res-gasto').innerText = Math.round(gastoTotal) + " kcal";
+            document.getElementById('res-calorias-alvo').innerText = Math.round(caloriasAlvo) + " kcal";
+            
+            document.getElementById('res-prot').innerText = Math.round(protGramas) + "g";
+            document.getElementById('res-gord').innerText = Math.round(gordGramas) + "g";
+            
+            // Garantir que carbos não fiquem negativos (caso o défice seja muito alto)
+            let finalCarbs = carbGramas > 0 ? Math.round(carbGramas) : 0;
+            document.getElementById('res-carb').innerText = finalCarbs + "g";
+
+            // Mostrar os resultados
+            document.getElementById('resultados').classList.remove('hidden');
+            
+            // Rolar suavemente para baixo
+            document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
